@@ -1,0 +1,225 @@
+# Treat everything not text if not specified
+# Avoid crlf messing up things like .asset and ProjectSettings (But we'd like to diff so we do not assign binary[-text -diff] tag)
+# You should never do line ending conversion on .asset, .asset could be CRLF(ProjectSettings) LF(Tile set config) or binary even if forced text(Lighting, Terrain and NavMesh Data)
+* -text
+
+# Unity visible meta is LF regardless of created platform
+*.meta text eol=lf
+
+# All extensions are specified in lower cases
+# [git config core.ignorecase true] is assumed.
+# The projects are going to be developed across OSX and Windows, if we allow OSX user to commit file names only differ in capitalization.
+# These files will prevent Windows users to pull
+
+
+# Human authored code
+# Files with auto crlf conversion, auto crlf is painful to get right
+# But we need it to avoid committing files with all line endings changed by text editor
+# Such commit will cripple [git blame]
+# We decided to force lf across platforms now for adding code as source hash calculation input
+# And we'd like source code having the same binary across Windows and macOS so that the souce hash would be calculated the same
+*.cs          text diff=csharp eol=lf
+*.json        text linguist-language=json eol=lf
+*.xaml        text eol=lf
+
+# ShaderLab
+*.cginc       text eol=lf
+*.shader      text eol=lf
+
+# Shader
+*.compute     text linguist-language=hlsl eol=lf
+*.hlsl        text linguist-language=hlsl eol=lf
+*.raytrace    text linguist-language=hlsl eol=lf
+*.pssl        text eol=lf
+*.frag        text eol=lf
+*.inc         text eol=lf
+
+# Gradle property
+*.properties  text eol=lf
+
+# Unity UI Toolkit files
+*.tss         text diff=css linguist-language=css eol=lf
+*.uss         text diff=css linguist-language=css eol=lf
+*.uxml        text linguist-language=xml linguist-detectable eol=lf
+
+# AndroidManifest and other XML files
+*.xml         text eol=lf
+
+# iOS plugin possible extensions
+*.h           text diff=cpp eol=lf
+*.c           text diff=cpp eol=lf
+*.cpp         text diff=cpp eol=lf
+*.m           text eol=lf
+*.mm          text eol=lf
+
+# NeXTSTEP property list
+*.plist       text eol=lf
+
+# GitLab and other services config
+*.yml         text eol=lf
+*.toml        text eol=lf
+
+# Code style settings
+*.DotSettings text eol=lf
+
+# Unity JSON files
+*.asmdef       text linguist-language=json eol=lf
+*.asrdef       text linguist-language=json eol=lf
+*.index        test linguist-language=json eol=lf
+*.inputactions test linguist-language=json eol=lf
+
+# LFS
+# We intentionally NOT LFS tracking .prefab and .unity(Unity scene) in order to diff
+# We also intentionally not assign YAMLMerge as diff and merge to them, it does not work
+
+# Library
+*.dll         filter=lfs diff=lfs merge=lfs lockable
+*.jar         filter=lfs diff=lfs merge=lfs lockable
+*.aar         filter=lfs diff=lfs merge=lfs lockable
+*.srcaar      filter=lfs diff=lfs merge=lfs lockable
+*.so          filter=lfs diff=lfs merge=lfs lockable
+*.lib         filter=lfs diff=lfs merge=lfs lockable
+*.a           filter=lfs diff=lfs merge=lfs lockable
+*.dylib       filter=lfs diff=lfs merge=lfs lockable
+*.swiftmodule filter=lfs diff=lfs merge=lfs lockable
+*.swiftdoc    filter=lfs diff=lfs merge=lfs lockable
+*.bundle      filter=lfs diff=lfs merge=lfs lockable
+
+# Debug information, really should not get committed into repository
+# Program database
+*.pdb filter=lfs diff=lfs merge=lfs lockable
+# Program database for Mono
+*.mdb filter=lfs diff=lfs merge=lfs lockable
+
+# Linking information, really should not get committed into repository
+*.ilk filter=lfs diff=lfs merge=lfs lockable
+
+# Executable
+*.exe filter=lfs diff=lfs merge=lfs lockable
+*.apk filter=lfs diff=lfs merge=lfs lockable
+
+# Unity
+LightingData.asset filter=lfs diff=lfs merge=lfs lockable
+TerrainData.asset  filter=lfs diff=lfs merge=lfs lockable
+NavMesh.asset      filter=lfs diff=lfs merge=lfs lockable
+Rewired_Core.XML   filter=lfs diff=lfs merge=lfs lockable
+*.cubemap          filter=lfs diff=lfs merge=lfs lockable
+
+# Texture
+*.bmp     filter=lfs diff=lfs merge=lfs lockable
+*.gif     filter=lfs diff=lfs merge=lfs lockable
+*.png     filter=lfs diff=lfs merge=lfs lockable
+*.jpg     filter=lfs diff=lfs merge=lfs lockable
+*.jpeg    filter=lfs diff=lfs merge=lfs lockable
+# Commiting PSD to Unity is not recommended (long import time)
+*.psd     filter=lfs diff=lfs merge=lfs lockable
+*.ai      filter=lfs diff=lfs merge=lfs lockable
+*.tga     filter=lfs diff=lfs merge=lfs lockable
+*.tif     filter=lfs diff=lfs merge=lfs lockable
+*.tiff    filter=lfs diff=lfs merge=lfs lockable
+*.exr     filter=lfs diff=lfs merge=lfs lockable
+*.hdr     filter=lfs diff=lfs merge=lfs lockable
+*.iff     filter=lfs diff=lfs merge=lfs lockable
+*.svg     filter=lfs diff=lfs merge=lfs lockable
+*.webp    filter=lfs diff=lfs merge=lfs lockable
+*.pict    filter=lfs diff=lfs merge=lfs lockable
+# GIMP eXperimental Computing Facility
+*.xcf     filter=lfs diff=lfs merge=lfs lockable
+# Clip Studio Paint
+*.clip    filter=lfs diff=lfs merge=lfs lockable
+# Substance
+*.sbs     filter=lfs diff=lfs merge=lfs lockable
+*.spp     filter=lfs diff=lfs merge=lfs lockable
+*.sbsar   filter=lfs diff=lfs merge=lfs lockable
+# https://substance3d.adobe.com/documentation/bake/what-are-assbin-files-172824370.html
+*.assbin  filter=lfs diff=lfs merge=lfs lockable
+
+# Shader
+# Unity shader graph, almost unreadable text file
+*.shadersubgraph filter=lfs diff=lfs merge=lfs lockable
+
+# 3D models
+*.3ds     filter=lfs diff=lfs merge=lfs lockable
+*.3dm     filter=lfs diff=lfs merge=lfs lockable
+*.blend   filter=lfs diff=lfs merge=lfs lockable
+*.c4d     filter=lfs diff=lfs merge=lfs lockable
+*.collada filter=lfs diff=lfs merge=lfs lockable
+*.dae     filter=lfs diff=lfs merge=lfs lockable
+*.dxf     filter=lfs diff=lfs merge=lfs lockable
+*.FBX     filter=lfs diff=lfs merge=lfs lockable
+*.fbx     filter=lfs diff=lfs merge=lfs lockable
+*.jas     filter=lfs diff=lfs merge=lfs lockable
+*.lws     filter=lfs diff=lfs merge=lfs lockable
+*.lxo     filter=lfs diff=lfs merge=lfs lockable
+*.ma      filter=lfs diff=lfs merge=lfs lockable
+*.max     filter=lfs diff=lfs merge=lfs lockable
+*.mb      filter=lfs diff=lfs merge=lfs lockable
+*.obj     filter=lfs diff=lfs merge=lfs lockable
+*.ply     filter=lfs diff=lfs merge=lfs lockable
+*.skp     filter=lfs diff=lfs merge=lfs lockable
+*.stl     filter=lfs diff=lfs merge=lfs lockable
+*.ztl     filter=lfs diff=lfs merge=lfs lockable
+
+# Audio
+*.aif     filter=lfs diff=lfs merge=lfs lockable
+*.aiff    filter=lfs diff=lfs merge=lfs lockable
+*.it      filter=lfs diff=lfs merge=lfs lockable
+*.mod     filter=lfs diff=lfs merge=lfs lockable
+*.mp3     filter=lfs diff=lfs merge=lfs lockable
+*.ogg     filter=lfs diff=lfs merge=lfs lockable
+*.s3m     filter=lfs diff=lfs merge=lfs lockable
+*.wav     filter=lfs diff=lfs merge=lfs lockable
+*.xm      filter=lfs diff=lfs merge=lfs lockable
+*.wma     filter=lfs diff=lfs merge=lfs lockable
+*.bnk     filter=lfs diff=lfs merge=lfs lockable
+# Wwise work units .wwu and Wwise project .wproj are readable XML, not LFS for now
+
+# Animation
+*.skel.bytes filter=lfs diff=lfs merge=lfs lockable
+*.xaf        filter=lfs diff=lfs merge=lfs lockable
+# Unity animation is serialized as text under Force Text but unreadable
+*.anim       filter=lfs diff=lfs merge=lfs lockable
+
+# Video
+*.asf     filter=lfs diff=lfs merge=lfs lockable
+*.avi     filter=lfs diff=lfs merge=lfs lockable
+*.flv     filter=lfs diff=lfs merge=lfs lockable
+*.mov     filter=lfs diff=lfs merge=lfs lockable
+*.mp4     filter=lfs diff=lfs merge=lfs lockable
+*.mpeg    filter=lfs diff=lfs merge=lfs lockable
+*.mpg     filter=lfs diff=lfs merge=lfs lockable
+*.ogv     filter=lfs diff=lfs merge=lfs lockable
+*.wmv     filter=lfs diff=lfs merge=lfs lockable
+
+# Font
+*.ttf     filter=lfs diff=lfs merge=lfs lockable
+*.otf     filter=lfs diff=lfs merge=lfs lockable
+
+# Document
+*.doc     filter=lfs diff=lfs merge=lfs lockable
+*.docx    filter=lfs diff=lfs merge=lfs lockable
+*.pdf     filter=lfs diff=lfs merge=lfs lockable
+*.rtf     filter=lfs diff=lfs merge=lfs lockable
+*.chm     filter=lfs diff=lfs merge=lfs lockable
+
+# ETC
+*.reason  filter=lfs diff=lfs merge=lfs lockable
+*.rns     filter=lfs diff=lfs merge=lfs lockable
+
+# Spreadsheet
+*.xls     filter=lfs diff=lfs merge=lfs lockable
+*.xlsx    filter=lfs diff=lfs merge=lfs lockable
+
+# Misc, consider remove them from repository
+*.7z           filter=lfs diff=lfs merge=lfs lockable
+*.zip          filter=lfs diff=lfs merge=lfs lockable
+*.bz2          filter=lfs diff=lfs merge=lfs lockable
+*.rar          filter=lfs diff=lfs merge=lfs lockable
+*.tar          filter=lfs diff=lfs merge=lfs lockable
+*.gz           filter=lfs diff=lfs merge=lfs lockable
+*.unitypackage filter=lfs diff=lfs merge=lfs lockable
+*.nupkg        filter=lfs diff=lfs merge=lfs lockable
+# 3ds Max plugin
+*.dlu          filter=lfs diff=lfs merge=lfs lockable
+# SQLite database
+*.db           filter=lfs diff=lfs merge=lfs lockable
