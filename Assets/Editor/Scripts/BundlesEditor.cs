@@ -1,0 +1,161 @@
+using RedGame.Framework.EditorTools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+
+namespace MAG_I.ShopCatalogue.Editor
+{
+    public class BundlesEditor : EditorWindow
+    {
+        private SimpleEditorTableView<Bundle> _tableView;
+        private static Queue<string> _lastBundlesId;
+
+        public static void ShowBundlesEditor()
+        {
+            BundlesEditor window = GetWindow<BundlesEditor>();
+            _lastBundlesId ??= new();
+            window.titleContent = new GUIContent("Bundles Editor");
+        }
+
+        private void BottomGUI()
+        {
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button("Add Bundle"))
+            {
+                _lastBundlesId?.Enqueue($"B{CatalogueEditor.CatalogueData.Bundles.Count}");
+                Bundle bundle = new()
+                {
+                    Id = _lastBundlesId?.Dequeue(),
+                    Name = String.Empty,
+                    Price = 0,
+                    ShortDescription = "",
+                };
+                var ItemTypes = Enum.GetValues(typeof(EItemType)).Cast<EItemType>();
+                foreach (var itemType in ItemTypes)
+                {
+                    bundle.AddToBundle(new BundleItem
+                    {
+                        ItemType = itemType,
+                        Amount = 1
+                    });
+                }
+                BundleEditor.ShowBundleItemEditorWindow(ref bundle);
+                CatalogueEditor.CatalogueData.Bundles.Add(bundle);
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private SimpleEditorTableView<Bundle> CreateBundleTable()
+        {
+            SimpleEditorTableView<Bundle> tableView = new SimpleEditorTableView<Bundle>();
+
+            tableView.AddColumn("ID", 20, (rect, item) =>
+            {
+                rect.xMin += 10;
+                EditorGUI.LabelField(position: rect, label: item.Id);
+            }).SetMaxWidth(30).SetTooltip("ID of the product");
+
+            tableView.AddColumn("Name", 50, (rect, item) =>
+            {
+                EditorGUI.LabelField(position: rect, label: item.Name);
+            }).SetAutoResize(true).SetTooltip("Bundle name")
+                .SetSorting((a, b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal));
+
+            tableView.AddColumn("Price", 30, (rect, item) =>
+            {
+                EditorGUI.LabelField(position: rect, label: item.Price.ToString());
+            }).SetAutoResize(true).SetTooltip("Bundle price")
+                .SetSorting((a, b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal));
+
+            tableView.AddColumn("Description", 100, (rect, item) =>
+            {
+                GUIStyle textStyle = EditorStyles.label;
+                textStyle.wordWrap = true;
+                EditorGUI.LabelField(position: rect, label: item.ShortDescription.ToString(), textStyle);
+            }).SetAutoResize(true).SetTooltip("Bundle description");
+
+            tableView.AddColumn("Delete", 20, (rect, item) =>
+            {
+                if (GUI.Button(rect, "X"))
+                {
+                    CatalogueEditor.CatalogueData.Bundles.Remove(item);
+                    CatalogueEditor.ProductIds.Remove(item.Id);
+                    _lastBundlesId.Enqueue(item.Id);
+                }
+            }).SetTooltip("Click to delete this Product");
+
+
+            return tableView;
+        }
+
+        private void OnGUI()
+        {
+            _tableView ??= CreateBundleTable();
+            _tableView.DrawTableGUI(CatalogueEditor.CatalogueData.Bundles);
+            BottomGUI();
+        }
+    }
+
+    public class BundleEditor : EditorWindow
+    {
+        private static Bundle _bundle;
+        private List<BundleItem> _items;
+        public static void ShowBundleItemEditorWindow(ref Bundle b)
+        {
+            _bundle = b;
+            BundleEditor window = GetWindow<BundleEditor>();
+            window.titleContent = new GUIContent("Bundle Editor");
+        }
+
+        private void OnGUI()
+        {
+            EditorGUILayout.BeginVertical();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Name: ");
+            _bundle.Name = EditorGUILayout.TextField(_bundle.Name);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Price: ");
+            _bundle.Price = EditorGUILayout.FloatField(_bundle.Price);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Short Description: ");
+            _bundle.ShortDescription = GUILayout.TextArea(_bundle.ShortDescription);
+            EditorGUILayout.EndHorizontal();
+
+            for (int i = 0; i < _bundle.Items.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                _bundle.Items[i].ItemType = (EItemType)EditorGUILayout.EnumPopup(_bundle.Items[i].ItemType);
+                _bundle.Items[i].Amount = (uint)EditorGUILayout.IntField((int)_bundle.Items[i].Amount);
+                if (GUILayout.Button("X"))
+                {
+                    _items ??= new();
+                    _items.Add(_bundle.Items[i]);
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+            if (_items != null && _items.Count > 0)
+            {
+                foreach (var item in _items)
+                {
+                    _bundle.RemoveFromBundle(item);
+                }
+                _items.Clear();
+            }
+            EditorGUILayout.EndVertical();
+            if (GUILayout.Button("Ok"))
+            {
+                Close();
+            }
+        }
+
+    }
+}
