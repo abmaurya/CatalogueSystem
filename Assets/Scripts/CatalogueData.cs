@@ -1,35 +1,50 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace MAG_I.ShopCatalogue
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum EItemType
     {
+        None,
         Coins,
         Gems,
         Tickets
     }
 
     [System.Serializable]
-    public class CatalogueItem
+    public abstract class CatalogueItem
     {
         public string Id;
         public string Name;
         public string ShortDescription;
         public float Price;
+        public virtual EItemType? GetItemType()
+        {
+            return null;
+        }
     }
 
     [System.Serializable]
     public class Product : CatalogueItem
     {
+        [JsonConverter(typeof(StringEnumConverter))]
         public EItemType ItemType;
         public uint Amount;
+
+        public override EItemType? GetItemType()
+        {
+            return ItemType;
+        }
     }
 
     [System.Serializable]
     public class BundleItem
     {
+        [JsonConverter(typeof(StringEnumConverter))]
         public EItemType ItemType;
         public uint Amount;
     }
@@ -49,13 +64,23 @@ namespace MAG_I.ShopCatalogue
             _items.Add(item);
             return null;
         }
+
+        public void RemoveFromBundle(BundleItem item)
+        {
+            _items.Remove(item);
+        }
+
+        public void RemoveAtIndexFromBundle(int index)
+        {
+            _items.RemoveAt(index);
+        }
     }
 
 
     [System.Serializable]
     public sealed class CatalogueData
     {
-        public List<Product> Products = new();
-        public List<Bundle> Bundles = new();
+        public List<Product> Products;
+        public List<Bundle> Bundles;
     }
 }

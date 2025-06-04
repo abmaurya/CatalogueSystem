@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-//This following is for JsonUtility, can be replaced by
-//the one Provided by Microsoft -> JsonSerializer from System.Text.Json
-using UnityEngine;
+using Newtonsoft.Json;
 
 namespace MAG_I.ShopCatalogue
 {
@@ -11,7 +9,7 @@ namespace MAG_I.ShopCatalogue
         // Holds the catalogue data all products and bundles
         private List<CatalogueItem> _allItems = new List<CatalogueItem>();
         private CatalogueData _catalogueData;
-
+        
         #region PRIVATE_FUNCTIONS
         /// <summary>
         /// Add new items to the catalogue with new entries
@@ -40,20 +38,15 @@ namespace MAG_I.ShopCatalogue
         #endregion 
 
         /// <summary>
-        /// Loads catalog data from a JSON TextAsset.
+        /// Loads catalogue data from a JSON TextAsset.
         /// </summary>
         public void LoadCatalogFromJson(string catalogueJsonData)
         {
-            _catalogueData = JsonUtility.FromJson<CatalogueData>(catalogueJsonData);
+            _catalogueData = JsonConvert.DeserializeObject<CatalogueData>(catalogueJsonData);
             if (_catalogueData.Products != null)
                 _allItems.AddRange(_catalogueData.Products);
             if (_catalogueData.Bundles != null)
                 _allItems.AddRange(_catalogueData.Bundles);
-        }
-
-        public string GetCatalogueAsJson()
-        {
-            return JsonUtility.ToJson(_catalogueData);
         }
 
         public List<CatalogueItem> GetAllItems()
@@ -62,7 +55,7 @@ namespace MAG_I.ShopCatalogue
             return new List<CatalogueItem>(_allItems);
         }
 
-        public List<CatalogueItem> FilterItems(System.Func<CatalogueItem, bool> predicate)
+        public List<CatalogueItem> FilterIAlltems(System.Func<CatalogueItem, bool> predicate)
         {
             return _allItems.Where(predicate).ToList();
         }
@@ -74,7 +67,7 @@ namespace MAG_I.ShopCatalogue
         }
 
         /// <summary>
-        /// Sorts catalog items by a custom item order. For a product, its associated item is used;
+        /// Sorts catalogue items by a custom item order. For a product, its associated item is used;
         /// for a bundle, the first matching item (lowest index in customOrder) is used.
         /// </summary>
         public List<CatalogueItem> SortItemsByCustomOrder(List<EItemType> customOrder)
@@ -100,6 +93,18 @@ namespace MAG_I.ShopCatalogue
                 }
                 return index;
             }).ToList();
+        }
+
+        public List<CatalogueItem> GetAllProducts()
+        {
+            List<CatalogueItem> products = new(_catalogueData.Products);
+            return products;
+        }
+
+        public List<CatalogueItem> GetAllBundles()
+        {
+            List<CatalogueItem> bundles = new(_catalogueData.Bundles);
+            return bundles;
         }
     }
 }
