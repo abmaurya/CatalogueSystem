@@ -7,8 +7,10 @@ namespace MAG_I.ShopCatalogue
     public interface ICatalogue
     {
         List<CatalogueItem> GetAllItems();
-        List<CatalogueItem> FilterItems(System.Func<CatalogueItem, bool> predicate);
+        List<CatalogueItem> FilterIAlltems(System.Func<CatalogueItem, bool> predicate);
         List<CatalogueItem> SortItems<TKey>(System.Func<CatalogueItem, TKey> keySelector, bool ascending = true);
         List<CatalogueItem> SortItemsByCustomOrder(List<EItemType> customOrder);
+        List<CatalogueItem> GetAllProducts();
+        List<CatalogueItem> GetAllBundles();
     }
 }
