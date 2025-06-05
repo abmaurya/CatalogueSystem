@@ -21,7 +21,7 @@ namespace MAG_I.ShopCatalogue
         Coins,
         Gems,
         Tickets,
-        
+
         Coins_or_Gems,
         Coins_or_Tickets,
         Gems_or_Tickets,
@@ -31,7 +31,7 @@ namespace MAG_I.ShopCatalogue
         Gems_and_Tickets,
     }
 
-    public enum ESortByCustomOrderType
+    public enum ECustomSortType
     {
         None = 0,
         Coins_Gems_Tickets,
@@ -61,7 +61,7 @@ namespace MAG_I.ShopCatalogue
         [SerializeField]
         private Sprite _bundleSprite;
         [SerializeField]
-        private TMPro.TMP_Dropdown _sortByCustomOrderDropDown;
+        private TMPro.TMP_Dropdown _customSortDropDown;
         [SerializeField]
         private TMPro.TMP_Dropdown _sortByValueDropDown;
         [SerializeField]
@@ -75,7 +75,8 @@ namespace MAG_I.ShopCatalogue
         private List<GameObject> _shopItems;
         private CatalogueManager _catalogueManager;
         private EItemTypeForFilter _selectedFilter;
-        private ESortByValueType _selectedSortType;
+        private ESortByValueType _selectedSortByValueType;
+        private ECustomSortType _selectedCustomSortType;
         private bool _isBundleOnDisplay;
 
         void Start()
@@ -84,7 +85,8 @@ namespace MAG_I.ShopCatalogue
             _shopItems = new List<GameObject>();
             _isBundleOnDisplay = false;
             _selectedFilter = EItemTypeForFilter.All;
-            _selectedSortType = ESortByValueType.None;
+            _selectedSortByValueType = ESortByValueType.None;
+            _selectedCustomSortType = ECustomSortType.None;
 
             // Initialize and load the catalogue.
             _catalogueManager = new CatalogueManager();
@@ -95,17 +97,19 @@ namespace MAG_I.ShopCatalogue
             _productsButton.onClick.AddListener(ShowProducts);
             _bundlesButton.onClick.AddListener(ShowBundles);
 
-            var customSortItemTypes = new List<string>(System.Enum.GetNames(typeof(ESortByCustomOrderType)));
+            var customSortItemTypes = new List<string>(System.Enum.GetNames(typeof(ECustomSortType)));
             for (int i = 0; i < customSortItemTypes.Count; i++)
             {
-                customSortItemTypes[i] = customSortItemTypes[i].Replace("_", "<");
+                customSortItemTypes[i] = customSortItemTypes[i].Replace("_", " > ");
             }
-            _sortByCustomOrderDropDown.AddOptions(customSortItemTypes);
+            _customSortDropDown.ClearOptions();
+            _customSortDropDown.AddOptions(customSortItemTypes);
+            _customSortDropDown.onValueChanged.AddListener(CustomSortCatalogueItems);
 
             var sortItemTypes = new List<string>(System.Enum.GetNames(typeof(ESortByValueType)));
             _sortByValueDropDown.ClearOptions();
             _sortByValueDropDown.AddOptions(sortItemTypes);
-            _sortByValueDropDown.onValueChanged.AddListener(SortCatalogueView);
+            _sortByValueDropDown.onValueChanged.AddListener(SortCatalogueByValue);
 
             var itemTypes = new List<string>(System.Enum.GetNames(typeof(EItemTypeForFilter)));
             _filterDropDown.ClearOptions();
@@ -143,71 +147,101 @@ namespace MAG_I.ShopCatalogue
 
         private void FilterCatalogueView(int cataLogueItemType)
         {
-            var itemType = (EItemTypeForFilter)cataLogueItemType;
-            _selectedFilter = itemType;
-            List<CatalogueItem> filteredItems = new();
+            _selectedFilter = (EItemTypeForFilter)cataLogueItemType;
+            UpdateCatalogueView(SortAndFilterCatalogue());
+        }
+
+        private void SortCatalogueByValue(int sortType)
+        {
+            _selectedSortByValueType = (ESortByValueType)sortType;
+            if(_selectedCustomSortType != ECustomSortType.None)
+            {
+                _customSortDropDown.onValueChanged.RemoveAllListeners();
+                _customSortDropDown.value = 0;
+                _selectedCustomSortType = ECustomSortType.None;
+                _customSortDropDown.onValueChanged.AddListener(CustomSortCatalogueItems);
+            }
+            UpdateCatalogueView(SortAndFilterCatalogue());
+        }
+
+        private void CustomSortCatalogueItems(int customSortType)
+        {
+            _selectedCustomSortType = (ECustomSortType)customSortType;
+            if (_selectedCustomSortType != ECustomSortType.None)
+            {
+                _sortByValueDropDown.onValueChanged.RemoveAllListeners();
+                _sortByValueDropDown.value = 0;
+                _selectedSortByValueType = ESortByValueType.None;
+                _sortByValueDropDown.onValueChanged.AddListener(SortCatalogueByValue);
+            }
+            UpdateCatalogueView(SortAndFilterCatalogue());
+        }
+        #endregion
+
+        private List<CatalogueItem> SortAndFilterCatalogue()
+        {
+            List<CatalogueItem> filteredItems = null;
+            List<CatalogueItem> filteredAndSortedItems = new();
+
             if (_isBundleOnDisplay)
             {
-                //if(_selectedSortType != ESortByValueType.None)
-                //{
-
-                //}
-                filteredItems.AddRange(_catalogueManager.FilterFromGivenItems(_catalogueManager.GetAllBundles(), item =>
+                filteredItems = _catalogueManager.GetAllBundles();
+                if (_selectedFilter != EItemTypeForFilter.All)
                 {
-                    Bundle bundle = (Bundle)item;
-                    // Return true if any entry in bundle matches.
-                    bool finalFilterValidation = false;
-                    int andFilter = 0;
-                    foreach (var bundleItem in bundle.Items)
+                    filteredItems.Clear();
+                    filteredItems.AddRange(_catalogueManager.FilterFromGivenItems(_catalogueManager.GetAllBundles(), item =>
                     {
-                        if (cataLogueItemType <= (int)EItemTypeForFilter.Gems_or_Tickets)
+                        Bundle bundle = (Bundle)item;
+                        // Return true if any entry in bundle matches.
+                        bool finalFilterValidation = false;
+                        int andFilter = 0;
+                        foreach (var bundleItem in bundle.Items)
                         {
-                            finalFilterValidation |= IsValidItemTypeFilter(bundleItem.ItemType, itemType);
-                        }
-                        else
-                        {
-                            if(IsValidItemTypeFilter(bundleItem.ItemType, itemType))
+                            if (_selectedFilter <= EItemTypeForFilter.Gems_or_Tickets)
                             {
-                                andFilter++;
+                                finalFilterValidation |= IsValidItemTypeFilter(bundleItem.ItemType, _selectedFilter);
                             }
-                            if(andFilter >= 2)
+                            else
                             {
-                                finalFilterValidation = true;
+                                if (IsValidItemTypeFilter(bundleItem.ItemType, _selectedFilter))
+                                {
+                                    andFilter++;
+                                }
+                                if (andFilter >= 2)
+                                {
+                                    finalFilterValidation = true;
+                                }
                             }
                         }
-                    }
-                    return finalFilterValidation;
-                }));
+                        return finalFilterValidation;
+                    }));
+                }
+                
             }
             else
             {
-                filteredItems.AddRange(_catalogueManager.FilterFromGivenItems(_catalogueManager.GetAllProducts(), item =>
+                filteredItems = _catalogueManager.GetAllProducts();
+                if (_selectedFilter != EItemTypeForFilter.All)
                 {
-                    Product prod = (Product)item;
-                    return IsValidItemTypeFilter(prod.ItemType, itemType);
-                }));
+                    filteredItems.Clear();
+                    filteredItems = _catalogueManager.FilterFromGivenItems(_catalogueManager.GetAllProducts(), item =>
+                    {
+                        Product prod = (Product)item;
+                        return IsValidItemTypeFilter(prod.ItemType, _selectedFilter);
+                    });
+                }
             }
-            UpdateCatalogueView(filteredItems);
-        }
-
-        private void SortCatalogueView(int sortType)
-        {
-            List<CatalogueItem> filteredItems = new();
-            _selectedSortType = (ESortByValueType)sortType;
-            if (_selectedFilter == EItemTypeForFilter.All)
+            //Only One sort can be active at a time
+            if (_selectedCustomSortType != ECustomSortType.None)
             {
-                if (_isBundleOnDisplay)
-                {
-                    filteredItems.AddRange(GetSortedItems(_catalogueManager.GetAllBundles(), (ESortByValueType)sortType));
-                }
-                else
-                {
-                    filteredItems.AddRange(GetSortedItems(_catalogueManager.GetAllProducts(), (ESortByValueType)sortType));
-                }
+                filteredAndSortedItems.AddRange(_catalogueManager.SortGivenItemsByCustomOrder(filteredItems, GetCustomOrderList()));
             }
-            UpdateCatalogueView(filteredItems);
+            else
+            {
+                filteredAndSortedItems.AddRange(GetSortedItems(filteredItems, (ESortByValueType)_selectedSortByValueType));
+            }
+            return filteredAndSortedItems;
         }
-        #endregion
 
         private bool IsValidItemTypeFilter(EItemType itemType, EItemTypeForFilter itemTypesFilter)
         {
@@ -255,6 +289,44 @@ namespace MAG_I.ShopCatalogue
             return items;
         }
 
+        private List<EItemType> GetCustomOrderList()
+        {
+            List<EItemType> customOrderList = new();
+            switch (_selectedCustomSortType)
+            {
+                case ECustomSortType.Coins_Gems_Tickets:
+                    customOrderList.Add(EItemType.Coins);
+                    customOrderList.Add(EItemType.Gems);
+                    customOrderList.Add(EItemType.Tickets);
+                    break;
+                case ECustomSortType.Gems_Tickets_Coins:
+                    customOrderList.Add(EItemType.Gems);
+                    customOrderList.Add(EItemType.Tickets);
+                    customOrderList.Add(EItemType.Coins);
+                    break;
+                case ECustomSortType.Tickets_Coins_Gems:
+                    customOrderList.Add(EItemType.Tickets); 
+                    customOrderList.Add(EItemType.Coins);
+                    customOrderList.Add(EItemType.Gems);
+                    break;
+                case ECustomSortType.Gems_Coins_Tickets:
+                    customOrderList.Add(EItemType.Gems);
+                    customOrderList.Add(EItemType.Coins);
+                    customOrderList.Add(EItemType.Tickets);
+                    break;
+                case ECustomSortType.Coins_Tickets_Gems:
+                    customOrderList.Add(EItemType.Coins);
+                    customOrderList.Add(EItemType.Tickets);
+                    customOrderList.Add(EItemType.Gems);
+                    break;
+                case ECustomSortType.Tickets_Gems_Coins:
+                    customOrderList.Add(EItemType.Tickets);
+                    customOrderList.Add(EItemType.Gems);
+                    customOrderList.Add(EItemType.Coins);
+                    break;
+            }
+            return customOrderList;
+        }
         private void ResetItemUICollections(ref List<CatalogueItem> items)
         {
             if (items.Count >= _shopItems.Count)
@@ -276,7 +348,7 @@ namespace MAG_I.ShopCatalogue
                     _shopItems[i].transform.SetParent(gameObject.transform);
                     _pooledShopItems.Enqueue(_shopItems[i]);
                 }
-                _shopItems.RemoveRange(startIndex, endIndex-startIndex);
+                _shopItems.RemoveRange(startIndex, endIndex - startIndex);
             }
         }
 
