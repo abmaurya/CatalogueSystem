@@ -6,10 +6,9 @@ using Newtonsoft.Json.Converters;
 
 namespace MAG_I.ShopCatalogue
 {
-    [JsonConverter(typeof(StringEnumConverter))]
     public enum EItemType
     {
-        None,
+        All = 0,
         Coins,
         Gems,
         Tickets
