@@ -6,15 +6,13 @@ namespace MAG_I.ShopCatalogue
 {
     public class CatalogueManager : ICatalogue
     {
+        #region Data members
         // Holds the catalogue data all products and bundles
         private List<CatalogueItem> _allItems = new List<CatalogueItem>();
         private CatalogueData _catalogueData;
-        
+        #endregion
+
         #region PRIVATE_FUNCTIONS
-        /// <summary>
-        /// Add new items to the catalogue with new entries
-        /// </summary>
-        /// <param name="items"></param>
         private void AddToCatalogue(List<CatalogueItem> items)
         {
             if (items == null)
@@ -37,9 +35,6 @@ namespace MAG_I.ShopCatalogue
         }
         #endregion 
 
-        /// <summary>
-        /// Loads catalogue data from a JSON TextAsset.
-        /// </summary>
         public void LoadCatalogFromJson(string catalogueJsonData)
         {
             _catalogueData = JsonConvert.DeserializeObject<CatalogueData>(catalogueJsonData);
@@ -65,10 +60,6 @@ namespace MAG_I.ShopCatalogue
             return SortGivenItems(_allItems, predicate, ascending);
         }
 
-        /// <summary>
-        /// Sorts catalogue items by a custom item order. For a product, its associated item is used;
-        /// for a bundle, the first matching item (lowest index in customOrder) is used.
-        /// </summary>
         public List<CatalogueItem> SortItemsByCustomOrder(List<EItemType> customOrder)
         {
             return SortGivenItemsByCustomOrder(_allItems, customOrder);

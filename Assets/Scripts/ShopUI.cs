@@ -6,6 +6,7 @@ using static UnityEditor.Progress;
 
 namespace MAG_I.ShopCatalogue
 {
+    #region UI Helper Enums 
     public enum ESortByValueType
     {
         None = 0,
@@ -42,9 +43,11 @@ namespace MAG_I.ShopCatalogue
         Coins_Tickets_Gems,
         Tickets_Gems_Coins,
     }
+    #endregion
 
     public class ShopUI : MonoBehaviour
     {
+        #region Data members
         [Tooltip("Assign the catalogue json file (as a TextAsset) from the Resources folder.")]
         [SerializeField]
         private TextAsset _jsonCatalogue;
@@ -80,6 +83,7 @@ namespace MAG_I.ShopCatalogue
         private ESortByValueType _selectedSortByValueType;
         private ECustomSortType _selectedCustomSortType;
         private bool _isBundleOnDisplay;
+        #endregion
 
         void Start()
         {
@@ -180,6 +184,12 @@ namespace MAG_I.ShopCatalogue
         }
         #endregion
 
+        #region Sorting and FIltering helper functions
+
+        /// <summary>
+        /// Sorts and filters the catalogue items
+        /// </summary>
+        /// <returns>List of sorted and filtered items</returns>
         private List<CatalogueItem> SortAndFilterCatalogue()
         {
             List<CatalogueItem> filteredItems = null;
@@ -245,6 +255,12 @@ namespace MAG_I.ShopCatalogue
             return filteredAndSortedItems;
         }
 
+        /// <summary>
+        /// Checks if the item selected and the item in the catalogue is valid for filter
+        /// </summary>
+        /// <param name="itemType">Type of catalogue item</param>
+        /// <param name="itemTypesFilter">Type chosen from the filter dropdown</param>
+        /// <returns>true if the item type matches the chosen filter type</returns>
         private bool IsValidItemTypeFilter(EItemType itemType, EItemTypeForFilter itemTypesFilter)
         {
             switch (itemTypesFilter)
@@ -275,6 +291,12 @@ namespace MAG_I.ShopCatalogue
             return false;
         }
 
+        /// <summary>
+        /// Get sorted list of catalogue items
+        /// </summary>
+        /// <param name="items">The catalofue items to sort</param>
+        /// <param name="sortType">Type of sorting to applye</param>
+        /// <returns>List of sorted items</returns>
         private List<CatalogueItem> GetSortedItems(List<CatalogueItem> items, ESortByValueType sortType)
         {
             switch (sortType)
@@ -291,6 +313,10 @@ namespace MAG_I.ShopCatalogue
             return items;
         }
 
+        /// <summary>
+        /// Get list of item types that dictate custom order
+        /// </summary>
+        /// <returns>List of item types</returns>
         private List<EItemType> GetCustomOrderList()
         {
             List<EItemType> customOrderList = new();
@@ -329,6 +355,13 @@ namespace MAG_I.ShopCatalogue
             }
             return customOrderList;
         }
+        #endregion
+
+        #region UI modification functions
+        /// <summary>
+        /// Reset catalogue items before prepareing new items for UI 
+        /// </summary>
+        /// <param name="items">List of items to reset</param>
         private void ResetItemUICollections(ref List<CatalogueItem> items)
         {
             if (items.Count >= _shopItems.Count)
@@ -354,6 +387,10 @@ namespace MAG_I.ShopCatalogue
             }
         }
 
+        /// <summary>
+        /// Update the shop view with new items
+        /// </summary>
+        /// <param name="items">List of items to showcase</param>
         private void UpdateCatalogueView(List<CatalogueItem> items)
         {
             ResetItemUICollections(ref items);
@@ -386,6 +423,10 @@ namespace MAG_I.ShopCatalogue
             }
         }
 
+        /// <summary>
+        /// Get a newly instantiated item or from the pool
+        /// </summary>
+        /// <returns>A gameobject that represents individual catalogue item in UI</returns>
         private GameObject GetUICataloguItem()
         {
             if (_pooledShopItems.Count > 0)
@@ -397,6 +438,7 @@ namespace MAG_I.ShopCatalogue
                 return Instantiate<GameObject>(_itemPrefab);
             }
         }
+        #endregion
 
         private void RunExamples()
         {
