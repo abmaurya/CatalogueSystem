@@ -439,55 +439,5 @@ namespace MAG_I.ShopCatalogue
             }
         }
         #endregion
-
-        private void RunExamples()
-        {
-            // Get all items.
-            Debug.Log("=== All Catalogue Items ===");
-            foreach (var item in _catalogueManager.GetAllItems())
-            {
-                Debug.Log(item.Name + " - $" + item.Price);
-            }
-
-            // Example: Sort by descending Price.
-            var sortedByPriceDesc = _catalogueManager.SortAllItems(item => item.Price, false);
-            Debug.Log("=== Sorted by Price (Descending) ===");
-            foreach (var item in sortedByPriceDesc)
-            {
-                Debug.Log(item.Name + " - $" + item.Price);
-            }
-
-            // Filter items to show only those involving Coins or Tickets.
-            var filteredItems = _catalogueManager.FilterAlltems(item =>
-            {
-                if (item is Product prod)
-                    return prod.ItemType == EItemType.Coins || prod.ItemType == EItemType.Tickets;
-                else if (item is Bundle bundle)
-                {
-                    // Return true if any entry in bundle matches.
-                    foreach (var entry in bundle.Items)
-                    {
-                        if (entry.ItemType == EItemType.Coins || entry.ItemType == EItemType.Tickets)
-                            return true;
-                    }
-                }
-                return false;
-            });
-
-            Debug.Log("=== Filtered Items (Coins and Tickets only) ===");
-            foreach (var item in filteredItems)
-            {
-                Debug.Log(item.Name);
-            }
-
-            // Custom sort by a custom item ordering.
-            var customOrder = new List<EItemType> { EItemType.Gems, EItemType.Coins, EItemType.Tickets };
-            var sortedByCustomOrder = _catalogueManager.SortAllItemsByCustomOrder(customOrder);
-            Debug.Log("=== Sorted by Custom Item Order (Gems > Coins > Tickets) ===");
-            foreach (var item in sortedByCustomOrder)
-            {
-                Debug.Log(item.Name);
-            }
-        }
     }
 }

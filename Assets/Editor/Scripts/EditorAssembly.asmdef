@@ -1,0 +1,16 @@
+{
+    "name": "EditorAssembly",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8766d1607968e6e45828fc185f059e94"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
