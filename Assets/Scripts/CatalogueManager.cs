@@ -55,7 +55,7 @@ namespace MAG_I.ShopCatalogue
             return new List<CatalogueItem>(_allItems);
         }
 
-        public List<CatalogueItem> FilterIAlltems(System.Func<CatalogueItem, bool> predicate)
+        public List<CatalogueItem> FilterAlltems(System.Func<CatalogueItem, bool> predicate)
         {
             return _allItems.Where(predicate).ToList();
         }
@@ -105,6 +105,32 @@ namespace MAG_I.ShopCatalogue
         {
             List<CatalogueItem> bundles = new(_catalogueData.Bundles);
             return bundles;
+        }
+
+        public List<CatalogueItem> FilterAllItems(System.Func<CatalogueItem, bool> predicate)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public List<CatalogueItem> FilterAllProducts(System.Func<CatalogueItem, bool> predicate)
+        {
+            return _catalogueData.Products.Where(predicate).ToList();
+        }
+
+        public List<CatalogueItem> FilterAllBundles(System.Func<CatalogueItem, bool> predicate)
+        {
+            return _catalogueData.Bundles.Where(predicate).ToList();
+        }
+
+        public List<CatalogueItem> FilterFromGivenItems(List<CatalogueItem> items, System.Func<CatalogueItem, bool> predicate)
+        {
+            return items.Where(predicate).ToList();
+        }
+
+        public List<CatalogueItem> SortGivenItems<TKey>(List<CatalogueItem> items, System.Func<CatalogueItem, TKey> keySelector, bool ascending = true)
+        {
+            return ascending ? items.OrderBy(keySelector).ToList()
+                             : items.OrderByDescending(keySelector).ToList();
         }
     }
 }
