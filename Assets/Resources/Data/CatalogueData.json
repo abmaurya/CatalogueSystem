@@ -9,20 +9,20 @@
       "Price": 2.55
     },
     {
-      "ItemType": "Gems",
-      "Amount": 10,
-      "Id": "P2",
-      "Name": "Gems Pack",
-      "ShortDescription": "Pack has Gems",
-      "Price": 5.99
-    },
-    {
       "ItemType": "Tickets",
       "Amount": 5,
       "Id": "P1",
       "Name": "Tickets Pack",
       "ShortDescription": "Pack has Tickets",
       "Price": 7.9
+    },
+    {
+      "ItemType": "Gems",
+      "Amount": 10,
+      "Id": "P2",
+      "Name": "Gems Pack",
+      "ShortDescription": "Pack has Gems",
+      "Price": 4.9
     }
   ],
   "Bundles": [
@@ -30,7 +30,7 @@
       "Id": "B0",
       "Name": "Cheap Bundle",
       "ShortDescription": "Bundle is cheap",
-      "Price": 15.6,
+      "Price": 15.9,
       "Items": [
         {
           "ItemType": "Coins",
