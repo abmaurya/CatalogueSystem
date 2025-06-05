@@ -23,7 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 //https://github.com/redclock/SimpleEditorTableView/blob/main/SimpleEditorTableView.cs
-// Edit: Replaced array with List
+// Edit: Replaced array with List, add maxwidth for column as an optional parameter
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,7 +94,7 @@ namespace RedGame.Framework.EditorTools
             _columnResized = true;
         }
         
-        public ColumnDef AddColumn(string title, int minWidth, DrawItem onDrawItem)
+        public ColumnDef AddColumn(string title, int minWidth, DrawItem onDrawItem, int maxWidth = int.MaxValue)
         {
             ColumnDef columnDef = new ColumnDef()
             {
@@ -102,6 +103,7 @@ namespace RedGame.Framework.EditorTools
                     allowToggleVisibility = false,
                     autoResize = true,
                     minWidth = minWidth,
+                    maxWidth = maxWidth,
                     canSort = false,
                     sortingArrowAlignment = TextAlignment.Right,
                     headerContent = new GUIContent(title),
