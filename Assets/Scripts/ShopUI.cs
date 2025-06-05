@@ -70,6 +70,8 @@ namespace MAG_I.ShopCatalogue
         private Button _productsButton;
         [SerializeField]
         private Button _bundlesButton;
+        [SerializeField]
+        private PurchasePopUp _purchasePopUp;
 
         private Queue<GameObject> _pooledShopItems;
         private List<GameObject> _shopItems;
@@ -378,7 +380,7 @@ namespace MAG_I.ShopCatalogue
                 {
                     sp = _bundleSprite;
                 }
-                _shopItems[i].GetComponent<CatalogueItemUI>().PrepView(sp, items[i].Price);
+                _shopItems[i].GetComponent<CatalogueItemUI>().PrepView(sp, items[i].Price, items[i].Name, items[i].ShortDescription, _purchasePopUp);
                 _shopItems[i].transform.SetParent(_shopScrollRect.content);
                 _shopItems[i].transform.localScale = Vector3.one;
             }
