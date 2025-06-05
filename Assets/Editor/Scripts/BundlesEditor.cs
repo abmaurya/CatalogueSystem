@@ -53,19 +53,19 @@ namespace MAG_I.ShopCatalogue.Editor
         {
             SimpleEditorTableView<Bundle> tableView = new SimpleEditorTableView<Bundle>();
 
-            tableView.AddColumn("ID", 20, (rect, item) =>
+            tableView.AddColumn("ID", 50, (rect, item) =>
             {
                 rect.xMin += 10;
                 EditorGUI.LabelField(position: rect, label: item.Id);
             }).SetMaxWidth(30).SetTooltip("ID of the product");
 
-            tableView.AddColumn("Name", 50, (rect, item) =>
+            tableView.AddColumn("Name", 120, (rect, item) =>
             {
                 EditorGUI.LabelField(position: rect, label: item.Name);
             }).SetAutoResize(true).SetTooltip("Bundle name")
                 .SetSorting((a, b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal));
 
-            tableView.AddColumn("Price", 30, (rect, item) =>
+            tableView.AddColumn("Price", 50, (rect, item) =>
             {
                 EditorGUI.LabelField(position: rect, label: item.Price.ToString());
             }).SetAutoResize(true).SetTooltip("Bundle price")
@@ -78,15 +78,28 @@ namespace MAG_I.ShopCatalogue.Editor
                 EditorGUI.LabelField(position: rect, label: item.ShortDescription.ToString(), textStyle);
             }).SetAutoResize(true).SetTooltip("Bundle description");
 
-            tableView.AddColumn("Delete", 20, (rect, item) =>
+            tableView.AddColumn("Edit/View", 50, (rect, item) =>
             {
-                if (GUI.Button(rect, "X"))
+                GUIStyle buttonStyle = EditorStyles.miniButtonMid;
+                buttonStyle.fontSize = 22;
+                if (GUI.Button(rect, "✎", buttonStyle))
+                {
+                    BundleEditor.ShowBundleItemEditorWindow(ref item);
+                }
+            }, maxWidth: 100).SetTooltip("Click to delete this Product");
+
+            tableView.AddColumn("Delete", 60, (rect, item) =>
+            {
+                GUIStyle buttonStyle = EditorStyles.miniButtonRight;
+                buttonStyle.fontSize = 22;
+                buttonStyle.fontStyle = FontStyle.Bold;
+                if (GUI.Button(rect, "X", buttonStyle))
                 {
                     CatalogueEditor.CatalogueData.Bundles.Remove(item);
                     CatalogueEditor.ProductIds.Remove(item.Id);
                     _lastBundlesId.Enqueue(item.Id);
                 }
-            }).SetTooltip("Click to delete this Product");
+            }, maxWidth: 20).SetTooltip("Click to delete this Product");
 
 
             return tableView;
@@ -95,7 +108,7 @@ namespace MAG_I.ShopCatalogue.Editor
         private void OnGUI()
         {
             _tableView ??= CreateBundleTable();
-            _tableView.DrawTableGUI(CatalogueEditor.CatalogueData.Bundles);
+            _tableView.DrawTableGUI(CatalogueEditor.CatalogueData.Bundles, rowHeight:20);
             BottomGUI();
         }
     }
