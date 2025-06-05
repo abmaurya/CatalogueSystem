@@ -20,5 +20,6 @@ namespace MAG_I.ShopCatalogue
 
         List<CatalogueItem> FilterFromGivenItems(List<CatalogueItem> items, System.Func<CatalogueItem, bool> predicate);
         List<CatalogueItem> SortGivenItems<TKey>(List<CatalogueItem> items, System.Func<CatalogueItem, TKey> keySelector, bool ascending = true);
+        List<CatalogueItem> SortGivenItemsByCustomOrder(List<CatalogueItem> items, List<EItemType> customOrder);
     }
 }

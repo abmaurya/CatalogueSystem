@@ -60,10 +60,9 @@ namespace MAG_I.ShopCatalogue
             return _allItems.Where(predicate).ToList();
         }
 
-        public List<CatalogueItem> SortItems<TKey>(System.Func<CatalogueItem, TKey> keySelector, bool ascending = true)
+        public List<CatalogueItem> SortItems<TKey>(System.Func<CatalogueItem, TKey> predicate, bool ascending = true)
         {
-            return ascending ? _allItems.OrderBy(keySelector).ToList()
-                             : _allItems.OrderByDescending(keySelector).ToList();
+            return SortGivenItems(_allItems, predicate, ascending);
         }
 
         /// <summary>
@@ -72,27 +71,7 @@ namespace MAG_I.ShopCatalogue
         /// </summary>
         public List<CatalogueItem> SortItemsByCustomOrder(List<EItemType> customOrder)
         {
-            return _allItems.OrderBy(item =>
-            {
-                int index = int.MaxValue;
-                if (item is Product prod)
-                {
-                    index = customOrder.IndexOf(prod.ItemType);
-                }
-                else if (item is Bundle bundle)
-                {
-                    // For bundles, determine the best index among all contained items.
-                    int foundIndex = int.MaxValue;
-                    foreach (BundleItem entry in bundle.Items)
-                    {
-                        int idx = customOrder.IndexOf(entry.ItemType);
-                        if (idx != -1 && idx < foundIndex)
-                            foundIndex = idx;
-                    }
-                    index = foundIndex;
-                }
-                return index;
-            }).ToList();
+            return SortGivenItemsByCustomOrder(_allItems, customOrder);
         }
 
         public List<CatalogueItem> GetAllProducts()
@@ -131,6 +110,31 @@ namespace MAG_I.ShopCatalogue
         {
             return ascending ? items.OrderBy(keySelector).ToList()
                              : items.OrderByDescending(keySelector).ToList();
+        }
+
+        public List<CatalogueItem> SortGivenItemsByCustomOrder(List<CatalogueItem> items, List<EItemType> customOrder)
+        {
+            return items.OrderBy(item =>
+            {
+                int index = int.MaxValue;
+                if (item is Product prod)
+                {
+                    index = customOrder.IndexOf(prod.ItemType);
+                }
+                else if (item is Bundle bundle)
+                {
+                    // For bundles, determine the best index among all contained items.
+                    int foundIndex = int.MaxValue;
+                    foreach (BundleItem entry in bundle.Items)
+                    {
+                        int idx = customOrder.IndexOf(entry.ItemType);
+                        if (idx != -1 && idx < foundIndex)
+                            foundIndex = idx;
+                    }
+                    index = foundIndex;
+                }
+                return index;
+            }).ToList();
         }
     }
 }
