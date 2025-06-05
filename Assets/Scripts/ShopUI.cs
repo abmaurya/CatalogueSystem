@@ -96,7 +96,7 @@ namespace MAG_I.ShopCatalogue
 
             // Initialize and load the catalogue.
             _catalogueManager = new CatalogueManager();
-            _catalogueManager.LoadCatalogFromJson(_jsonCatalogue.text);
+            _catalogueManager.LoadCatalogueFromJson(_jsonCatalogue.text);
             ShowProducts();
 
             //Add Listeners
@@ -450,7 +450,7 @@ namespace MAG_I.ShopCatalogue
             }
 
             // Example: Sort by descending Price.
-            var sortedByPriceDesc = _catalogueManager.SortItems(item => item.Price, false);
+            var sortedByPriceDesc = _catalogueManager.SortAllItems(item => item.Price, false);
             Debug.Log("=== Sorted by Price (Descending) ===");
             foreach (var item in sortedByPriceDesc)
             {
@@ -482,7 +482,7 @@ namespace MAG_I.ShopCatalogue
 
             // Custom sort by a custom item ordering.
             var customOrder = new List<EItemType> { EItemType.Gems, EItemType.Coins, EItemType.Tickets };
-            var sortedByCustomOrder = _catalogueManager.SortItemsByCustomOrder(customOrder);
+            var sortedByCustomOrder = _catalogueManager.SortAllItemsByCustomOrder(customOrder);
             Debug.Log("=== Sorted by Custom Item Order (Gems > Coins > Tickets) ===");
             foreach (var item in sortedByCustomOrder)
             {

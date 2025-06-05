@@ -24,14 +24,14 @@ namespace MAG_I.ShopCatalogue
         /// <param name="predicate">The function that dictates the filtering</param>
         /// <param name="ascending">Sort in ascending order</param>
         /// <returns>List of sorted items</returns>
-        List<CatalogueItem> SortItems<TKey>(System.Func<CatalogueItem, TKey> predicate, bool ascending = true);
+        List<CatalogueItem> SortAllItems<TKey>(System.Func<CatalogueItem, TKey> predicate, bool ascending = true);
 
         /// <summary>
         /// Sort all the items in ascending or descending order based on a predicate
         /// </summary>
         /// <param name="customOrder">List of item type</param>
         /// <returns>List of sorted items</returns>
-        List<CatalogueItem> SortItemsByCustomOrder(List<EItemType> customOrder);
+        List<CatalogueItem> SortAllItemsByCustomOrder(List<EItemType> customOrder);
         
         
         /// <summary>

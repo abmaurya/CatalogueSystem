@@ -35,7 +35,7 @@ namespace MAG_I.ShopCatalogue
         }
         #endregion 
 
-        public void LoadCatalogFromJson(string catalogueJsonData)
+        public void LoadCatalogueFromJson(string catalogueJsonData)
         {
             _catalogueData = JsonConvert.DeserializeObject<CatalogueData>(catalogueJsonData);
             if (_catalogueData.Products != null)
@@ -55,12 +55,12 @@ namespace MAG_I.ShopCatalogue
             return _allItems.Where(predicate).ToList();
         }
 
-        public List<CatalogueItem> SortItems<TKey>(System.Func<CatalogueItem, TKey> predicate, bool ascending = true)
+        public List<CatalogueItem> SortAllItems<TKey>(System.Func<CatalogueItem, TKey> predicate, bool ascending = true)
         {
             return SortGivenItems(_allItems, predicate, ascending);
         }
 
-        public List<CatalogueItem> SortItemsByCustomOrder(List<EItemType> customOrder)
+        public List<CatalogueItem> SortAllItemsByCustomOrder(List<EItemType> customOrder)
         {
             return SortGivenItemsByCustomOrder(_allItems, customOrder);
         }
