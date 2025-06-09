@@ -1,5 +1,6 @@
 # CatalogueSystem
 Test project for MAG Interactive
+
 Catalogue System:
 ICatalogue:
 This is an interface that can be used by different modules without knowing which class implements this. 
