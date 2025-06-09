@@ -27,29 +27,34 @@ namespace MAG_I.ShopCatalogue.Editor
             if (GUILayout.Button("Add Bundle"))
             {
                 _lastBundlesId?.Enqueue($"B{CatalogueEditor.CatalogueData.Bundles.Count}");
-                Bundle bundle = new()
-                {
-                    Id = _lastBundlesId?.Dequeue(),
-                    Name = String.Empty,
-                    Price = 0,
-                    ShortDescription = "",
-                };
-                var ItemTypes = Enum.GetValues(typeof(EItemType)).Cast<EItemType>();
-                foreach (var itemType in ItemTypes)
-                {
-                    //Skipping All type -  this is only for sorting and filtering
-                    if (itemType == EItemType.All)
-                        continue;
-                    bundle.AddToBundle(new BundleItem
-                    {
-                        ItemType = itemType,
-                        Amount = 1
-                    });
-                }
-                BundleEditor.ShowBundleItemEditorWindow(ref bundle);
-                CatalogueEditor.CatalogueData.Bundles.Add(bundle);
+                //Bundle bundle = new()
+                //{
+                //    Id = _lastBundlesId?.Dequeue(),
+                //    Name = String.Empty,
+                //    Price = 0,
+                //    ShortDescription = "",
+                //};
+                //var ItemTypes = Enum.GetValues(typeof(EItemType)).Cast<EItemType>();
+                //foreach (var itemType in ItemTypes)
+                //{
+                //    //Skipping All type -  this is only for sorting and filtering
+                //    if (itemType == EItemType.All)
+                //        continue;
+                //    bundle.AddToBundle(new BundleItem
+                //    {
+                //        ItemType = itemType,
+                //        Amount = 1
+                //    });
+                //}
+                BundleEditor.ShowBundleItemEditorWindow(OnAddBundleEntryCallback, _lastBundlesId.Peek());
+                //CatalogueEditor.CatalogueData.Bundles.Add(bundle);
             }
             EditorGUILayout.EndHorizontal();
+        }
+
+        void OnAddBundleEntryCallback(Bundle b)
+        {
+            CatalogueEditor.CatalogueData.Bundles.Add(b);
         }
 
         private SimpleEditorTableView<Bundle> CreateBundleTable()
@@ -119,10 +124,26 @@ namespace MAG_I.ShopCatalogue.Editor
     public class BundleEditor : EditorWindow
     {
         private static Bundle _bundle;
-        private List<BundleItem> _items;
-        public static void ShowBundleItemEditorWindow(ref Bundle b)
+        private List<BundleItem> _itemsToRemove;
+        private static Action<Bundle> _callback;
+
+        public static void ShowBundleItemEditorWindow(ref Bundle bundle)
         {
-            _bundle = b;
+            _bundle = bundle;
+            BundleEditor window = GetWindow<BundleEditor>();
+            window.titleContent = new GUIContent("Bundle Editor");
+        }
+
+        public static void ShowBundleItemEditorWindow(Action<Bundle> callback, string bundleId)
+        {
+            _callback = callback;
+            _bundle = new()
+            {
+                Id = bundleId,
+                Name = "Nice Bundle",
+                Price = 0,
+                ShortDescription = "Bundle of Niceness",
+            };
             BundleEditor window = GetWindow<BundleEditor>();
             window.titleContent = new GUIContent("Bundle Editor");
         }
@@ -143,7 +164,10 @@ namespace MAG_I.ShopCatalogue.Editor
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Short Description: ");
-            _bundle.ShortDescription = GUILayout.TextArea(_bundle.ShortDescription);
+            GUIStyle textAreaStyle = EditorStyles.textArea;
+            textAreaStyle.stretchHeight = true;
+            textAreaStyle.stretchWidth = true;
+            _bundle.ShortDescription = GUILayout.TextArea(_bundle.ShortDescription, textAreaStyle);
             EditorGUILayout.EndHorizontal();
 
             for (int i = 0; i < _bundle.Items.Count; i++)
@@ -159,24 +183,34 @@ namespace MAG_I.ShopCatalogue.Editor
                 _bundle.Items[i].Amount = (uint)EditorGUILayout.IntField((int)_bundle.Items[i].Amount);
                 if (GUILayout.Button("X"))
                 {
-                    _items ??= new();
-                    _items.Add(_bundle.Items[i]);
+                    _itemsToRemove ??= new();
+                    _itemsToRemove.Add(_bundle.Items[i]);
                 }
                 EditorGUILayout.EndHorizontal();
             }
-            if (_items != null && _items.Count > 0)
+            if (_itemsToRemove != null && _itemsToRemove.Count > 0)
             {
-                foreach (var item in _items)
+                foreach (var item in _itemsToRemove)
                 {
                     _bundle.RemoveFromBundle(item);
                 }
-                _items.Clear();
+                _itemsToRemove.Clear();
             }
-            EditorGUILayout.EndVertical();
+            if (GUILayout.Button("Add Item"))
+            {
+                _bundle.AddToBundle(new BundleItem
+                {
+                    ItemType = EItemType.Coins,
+                    Amount = 1
+                });
+            }
+            GUILayout.FlexibleSpace();
             if (GUILayout.Button("Ok"))
             {
+                _callback(_bundle);
                 Close();
             }
+            EditorGUILayout.EndVertical();
         }
 
     }
