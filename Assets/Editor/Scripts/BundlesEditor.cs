@@ -37,6 +37,9 @@ namespace MAG_I.ShopCatalogue.Editor
                 var ItemTypes = Enum.GetValues(typeof(EItemType)).Cast<EItemType>();
                 foreach (var itemType in ItemTypes)
                 {
+                    //Skipping All type -  this is only for sorting and filtering
+                    if (itemType == EItemType.All)
+                        continue;
                     bundle.AddToBundle(new BundleItem
                     {
                         ItemType = itemType,
@@ -146,7 +149,13 @@ namespace MAG_I.ShopCatalogue.Editor
             for (int i = 0; i < _bundle.Items.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
-                _bundle.Items[i].ItemType = (EItemType)EditorGUILayout.EnumPopup(_bundle.Items[i].ItemType);
+                var currItemType = _bundle.Items[i].ItemType;
+                var chosenItemType = (EItemType)EditorGUILayout.EnumPopup(_bundle.Items[i].ItemType);
+                if (chosenItemType == EItemType.All)
+                {
+                    EditorUtility.DisplayDialog("Error", "All type can not be selected! \nChoose other options", "OK");
+                }
+                _bundle.Items[i].ItemType = chosenItemType == EItemType.All? currItemType: chosenItemType;
                 _bundle.Items[i].Amount = (uint)EditorGUILayout.IntField((int)_bundle.Items[i].Amount);
                 if (GUILayout.Button("X"))
                 {
