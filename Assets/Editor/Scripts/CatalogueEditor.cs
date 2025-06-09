@@ -60,6 +60,7 @@ namespace MAG_I.ShopCatalogue.Editor
             if (GUILayout.Button("Save Data"))
             {
                 File.WriteAllText(path: _catalogueDataJsonPath, contents: JsonConvert.SerializeObject(CatalogueData, Formatting.Indented));
+                AssetDatabase.Refresh();
             }
         }
 
