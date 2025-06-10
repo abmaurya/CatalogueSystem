@@ -16,7 +16,7 @@ namespace MAG_I.ShopCatalogue.Editor
         {
             ProductsEditor window = GetWindow<ProductsEditor>();
             _lastProductId ??= new();
-            window.titleContent = new GUIContent("Bundles Editor");
+            window.titleContent = new GUIContent("Products Editor");
         }
 
         void BottomGUI()
