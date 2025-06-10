@@ -27,27 +27,7 @@ namespace MAG_I.ShopCatalogue.Editor
             if (GUILayout.Button("Add Bundle"))
             {
                 _lastBundlesId?.Enqueue($"B{CatalogueEditor.CatalogueData.Bundles.Count}");
-                //Bundle bundle = new()
-                //{
-                //    Id = _lastBundlesId?.Dequeue(),
-                //    Name = String.Empty,
-                //    Price = 0,
-                //    ShortDescription = "",
-                //};
-                //var ItemTypes = Enum.GetValues(typeof(EItemType)).Cast<EItemType>();
-                //foreach (var itemType in ItemTypes)
-                //{
-                //    //Skipping All type -  this is only for sorting and filtering
-                //    if (itemType == EItemType.All)
-                //        continue;
-                //    bundle.AddToBundle(new BundleItem
-                //    {
-                //        ItemType = itemType,
-                //        Amount = 1
-                //    });
-                //}
                 BundleEditor.ShowBundleItemEditorWindow(OnAddBundleEntryCallback, _lastBundlesId.Peek());
-                //CatalogueEditor.CatalogueData.Bundles.Add(bundle);
             }
             EditorGUILayout.EndHorizontal();
         }
