@@ -18,8 +18,7 @@ namespace MAG_I.ShopCatalogue
 
     public enum EItemTypeForFilter
     {
-        All = 0,
-        Coins,
+        Coins = 0,
         Gems,
         Tickets,
 
@@ -30,6 +29,7 @@ namespace MAG_I.ShopCatalogue
         Coins_and_Gems,
         Coins_and_Tickets,
         Gems_and_Tickets,
+        All,
     }
 
     public enum ECustomSortType
@@ -120,8 +120,8 @@ namespace MAG_I.ShopCatalogue
             var itemTypes = new List<string>(System.Enum.GetNames(typeof(EItemTypeForFilter)));
             _filterDropDown.ClearOptions();
             _filterDropDown.AddOptions(itemTypes);
+            _filterDropDown.value = (int)EItemTypeForFilter.All;
             _filterDropDown.onValueChanged.AddListener(FilterCatalogueView);
-            //RunExamples();
         }
 
         #region UI elements Event Listeners

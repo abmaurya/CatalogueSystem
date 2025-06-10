@@ -154,12 +154,7 @@ namespace MAG_I.ShopCatalogue.Editor
             {
                 EditorGUILayout.BeginHorizontal();
                 var currItemType = _bundle.Items[i].ItemType;
-                var chosenItemType = (EItemType)EditorGUILayout.EnumPopup(_bundle.Items[i].ItemType);
-                if (chosenItemType == EItemType.All)
-                {
-                    EditorUtility.DisplayDialog("Error", "All type can not be selected! \nChoose other options", "OK");
-                }
-                _bundle.Items[i].ItemType = chosenItemType == EItemType.All? currItemType: chosenItemType;
+                _bundle.Items[i].ItemType = (EItemType)EditorGUILayout.EnumPopup(_bundle.Items[i].ItemType);
                 _bundle.Items[i].Amount = (uint)EditorGUILayout.IntField((int)_bundle.Items[i].Amount);
                 if (GUILayout.Button("X"))
                 {

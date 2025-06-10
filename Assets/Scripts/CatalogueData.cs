@@ -8,7 +8,6 @@ namespace MAG_I.ShopCatalogue
 {
     public enum EItemType
     {
-        All = 0,
         Coins,
         Gems,
         Tickets

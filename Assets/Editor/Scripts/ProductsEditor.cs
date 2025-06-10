@@ -66,15 +66,10 @@ namespace MAG_I.ShopCatalogue.Editor
                 Rect iconRect = new(rect.x, rect.y, iconSize, iconSize);
                 Rect labelRect = new(iconRect.xMax, rect.y, rect.width - iconSize, rect.height);
                 var currItemType = item.ItemType;
-                var chosenItemType = (EItemType)EditorGUI.EnumPopup(
+                item.ItemType = (EItemType)EditorGUI.EnumPopup(
                     position: labelRect,
                     item.ItemType
                 );
-                if(chosenItemType == EItemType.All)
-                {
-                    EditorUtility.DisplayDialog("Error", "All type can not be selected! \nChoose other options", "OK");
-                }
-                item.ItemType = chosenItemType == EItemType.All ? currItemType : chosenItemType;
             }).SetAllowToggleVisibility(true).SetSorting((a, b) => a.ItemType - b.ItemType);
 
             tableView.AddColumn("Name", 50, (rect, item) =>
