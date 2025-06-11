@@ -10,6 +10,8 @@ public class PurchasePopUp : MonoBehaviour
     [SerializeField]
     private Button _buyButton;
     [SerializeField]
+    private Button _closeButton;
+    [SerializeField]
     private TMPro.TMP_Text _itemPriceText;
     [SerializeField]
     private TMPro.TMP_Text _itemNameText;
@@ -25,6 +27,7 @@ public class PurchasePopUp : MonoBehaviour
         _myCanvas = GetComponent<Canvas>();
         _graphicRaycaster = GetComponent<GraphicRaycaster>();
         _buyButton.onClick.AddListener(Hide);
+        _closeButton.onClick.AddListener(Hide);
         Hide();
     }
 
